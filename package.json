@@ -1,0 +1,54 @@
+{
+  "name": "suporte-remoto",
+  "version": "0.2.18",
+  "private": true,
+  "description": "Aplicativo de suporte remoto com consentimento explicito do cliente",
+  "main": "out/main/index.js",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "server:dev": "node server/signaling.cjs",
+    "build": "electron-vite build",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.node.json",
+    "test:server": "node --test server/*.test.cjs",
+    "test:electron": "npm run build && node scripts/test-electron.cjs",
+    "test:packaged": "node scripts/test-electron.cjs --packaged",
+    "dist:win": "electron-vite build && electron-builder --win nsis --config electron-builder.config.cjs"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.9",
+    "koffi": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^5.2.0",
+    "electron": "^44.5.1",
+    "electron-builder": "^26.15.3",
+    "electron-vite": "^5.0.0",
+    "lucide-react": "^0.468.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "typescript": "^5.7.2",
+    "vite": "^7.0.0",
+    "ws": "^8.22.0"
+  },
+  "build": {
+    "appId": "com.suporteremoto.desktop",
+    "productName": "Suporte Remoto",
+    "files": [
+      "out/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "target": "nsis"
+    }
+  },
+  "allowScripts": {
+    "electron@44.5.1": true,
+    "koffi@3.3.2": true
+  }
+}

@@ -1,0 +1,8 @@
+node_modules/
+server/node_modules/
+out/
+release/
+dist/
+*.log
+*.tsbuildinfo
+.env

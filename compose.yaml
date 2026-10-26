@@ -1,0 +1,53 @@
+services:
+  signaling:
+    build: .
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      SIGNALING_HOST: 0.0.0.0
+      SIGNALING_PORT: 8787
+      TRUST_PROXY: "true"
+      TURN_URL: "turn:${DOMAIN}:3478?transport=udp,turn:${DOMAIN}:3478?transport=tcp"
+    expose:
+      - "8787"
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    environment:
+      DOMAIN: ${DOMAIN:?Defina DOMAIN no arquivo .env}
+    depends_on:
+      - signaling
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+
+  turn:
+    image: coturn/coturn:latest
+    command:
+      - "-n"
+      - "--log-file=stdout"
+      - "--no-cli"
+      - "--fingerprint"
+      - "--use-auth-secret"
+      - "--static-auth-secret=${TURN_SECRET:?Defina TURN_SECRET no arquivo .env}"
+      - "--realm=${DOMAIN:?Defina DOMAIN no arquivo .env}"
+      - "--listening-port=3478"
+      - "--min-port=49160"
+      - "--max-port=49200"
+      - "--external-ip=${TURN_EXTERNAL_IP:?Defina TURN_EXTERNAL_IP no arquivo .env}"
+    ports:
+      - "3478:3478/udp"
+      - "3478:3478/tcp"
+      - "49160-49200:49160-49200/udp"
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:
